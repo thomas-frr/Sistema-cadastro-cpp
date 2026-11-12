@@ -37,41 +37,99 @@ void mostrarMenu() {
 }
 
 //Procedimento do usuario
-void cadastrarUsuario(Usuario vet[], int i){
+void cadastrarUsuario(Usuario vet[], int &n){
+    if(n >= MAX){
+        cout << "limite de usuarios atingido.\n";
+        return;
+    }
+
+    int mat;
     cout << "Digite a matricula: ";
-    cin >> vet[i].matricula;
+    cin >> mat;
+
+    //verifica matricula
+    for (int i = 0; i < n; i++){
+        if(vet[i].matricula == mat){
+            cout << "Erro: Ja existe um usuario cadasatrado com essa matricula.\n";
+            return;
+        }
+    }
+
+    vet[n].matricula = mat;
     cin.ignore();
     cout << "Digite o nome: ";
-    getline(cin, vet[i].nome);
-    cout << "Digite o Tipo (Aluno ou Professor): ";
-    cin >> vet[i].tipo;
+    getline(cin, vet[n].nome);
+    cout << "Digite o tipo: ";
+    getline(cin, vet[n].tipo);
+
+    n++;
+    cout << "Usuario cadastrado com sucesso.";
 }
 
 //Listar Usuarios
 void mostrarUsuarios(Usuario vet[], int n) {
     cout << "\n=== Usuarios Cadastrados ===\n";
+
+    if (n == 0){
+        cout << "Nenhum usuario cadastrado.\n";
+    }
+    else{
     for (int i = 0; i < n; i++) {
         cout << "---------------------------------\n";
         cout << "Matricula: " << vet[i].matricula << endl;
         cout << "Nome: " << vet[i].nome << endl;
         cout << "Tipo: " << vet[i].tipo << endl;
+        }
     }
-    if (n == 0) cout << "Nenhum usuario cadastrado.\n";
     cout << "---------------------------------\n\n\n";
 }
 
+//Procedimento pra ver se usuario existe
+bool usuarioExiste(Usuario vet[], int n, int matricula){
+    if(matricula == 0){
+        return true;
+    }
+    for(int i = 0; i > n; i++){
+        if(vet[i].matricula == matricula){
+            return true;
+        }
+    }
+    return false;
+}
+
 //Procedimento do livro
-void cadastrarLivro(Livro vet[], int i){
+void cadastrarLivro(Livro vetLivros[], int &nLivros,Usuario vetUsuarios[], int nUsuarios){
+    if(nLivros >= MAX){
+        cout << "Limite de livros atingido.\n";
+        return;
+    }
+
     cout << "Digite o codigo: ";
-    cin >> vet[i].codigo;
+    cin >> vetLivros[nLivros].codigo;
     cin.ignore();
     cout << "Digite o titulo: ";
-    getline(cin, vet[i].titulo);
+    getline(cin, vetLivros[nLivros].titulo);
     cout << "Digite o autor: ";
-    getline(cin, vet[i].autor);
+    getline(cin, vetLivros[nLivros].autor);
     cout << "Digite a edicao: ";
-    getline(cin, vet[i].edicao);
+    getline(cin, vetLivros[nLivros].edicao);
+
+
+    while (true){
+        int mat;
+        cout << "Digite a matricula do usuario que esta pegando emprestado: \n";
+        cin >> mat;
+        if(usuarioExiste(vetUsuarios, nUsuarios, mat)){
+            vetLivros[nLivros].idMatricula = mat;
+            break;
+        }
+        else{
+            cout << "Erro. Usuario com matricula: " << mat << " nao encontrado.\n";
+        }
 }
+
+
+
 
 //Listar Livros
 void mostrarLivros(Livro vet[], int n) {
@@ -87,8 +145,7 @@ void mostrarLivros(Livro vet[], int n) {
     cout << "---------------------------------\n\n\n";
 }
 
-//Mostrar livros por usuario
-void mostrarLivrosPorUsuario()
+
 
 int main(){
 
@@ -108,18 +165,10 @@ int main(){
 
         switch(opcao){
         case 1:
-            if (contUsuarios < MAX) {
-                cadastrarUsuario(listaUsuarios, contUsuarios++);
-            } else {
-                cout << "Limite de funcionarios atingido.\n";
-            }
+            cadastrarUsuario(listaUsuarios, contUsuarios);
             break;
         case 2:
-            if (contLivros < MAX) {
-                cadastrarLivro(listaLivros, contLivros++);
-            } else {
-                cout << "Limite de livros atingido.\n";
-            }
+            cadastrarLivro(listaLivros, contLivros, listaUsuarios, contUsuarios);
             break;
 
         case 3:
@@ -129,7 +178,7 @@ int main(){
         case 4:
             mostrarLivros(listaLivros, contLivros);
             break;
-        case 5:
+
 
         }
     }
